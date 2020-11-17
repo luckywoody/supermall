@@ -3,7 +3,8 @@
     <detail-nav-bar/>
     <detail-swiper :top-images ='topImages' />
     <detail-base-info :goods = "goods"/>
-    <!-- <div v-for ="index in 10"> {{index}} </div> -->
+    <detail-shop-info :shop = "shop" />
+    <div v-for ="index in 10"> {{index}} </div>
   </div>
 </template>
 
@@ -11,8 +12,10 @@
 import DetailNavBar from './childComponents/DetailNavBar'
 import DetailSwiper from './childComponents/DetailSwiper'
 import DetailBaseInfo from './childComponents/DetailBaseInfo'
+import DetailShopInfo from './childComponents/DetailShopInfo'
 
-import {getDetail,Goods} from 'network/detail'
+import {getDetail,Goods,Shop} from 'network/detail'
+
 
 
 export default {
@@ -21,14 +24,17 @@ export default {
     DetailNavBar,
     DetailSwiper,
     Goods,
-    DetailBaseInfo
+    DetailBaseInfo,
+    Shop,
+    DetailShopInfo
    
   },
   data() {
     return{
       iid: null,
       topImages:[],
-      goods:{}
+      goods:{},
+      shop:{}
     }
   },
   created(){
@@ -44,6 +50,9 @@ export default {
 
       //2获取商品信息
       this.goods = new Goods(data.itemInfo,data.columns,data.shopInfo.services)
+    
+      //3创建店铺信息
+      this.shop = new Shop(data.shopInfo)
     })
   }
 }
