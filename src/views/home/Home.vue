@@ -1,22 +1,27 @@
 <template>
   <div id ="home">
     <nav-bar class= "home-nav"><div slot ='center'>购物街</div></nav-bar>
-
+      <tab-control
+      :titles = "['流行','新款','精选']"
+       @tabClick = "tabClick" 
+       ref ="tabControl1" class= "tab-control" v-show = "isTabFixed" />
     <scroll class= "content" 
             ref= "scroll" 
             :probe-type ="3" 
             @scroll= "contentScroll" 
-            :pull-up-load ="true" @pullingUp = "loadMore">
-      <home-swiper :banners = "banners"/>
+            :pull-up-load ="true"  @pullingUp = "loadMore">
+      <home-swiper :banners = "banners" @swiperImageLoad = "swiperImageLoad" />
       <recommend-view :recommends ="recommends" />
       <feature-view/> 
-      <tab-control class="tab-control" 
-      :titles = "['流行','新款','精选']" @tabClick = "tabClick" />
+      <tab-control
+      :titles = "['流行','新款','精选']"
+       @tabClick = "tabClick" 
+       ref ="tabControl2" />
       <goods-list :goods ="showGoods" />
     </scroll>
     
     <back-top @click.native = "backClick" v-show= 'isShowBackTop' />
-    
+     
   </div>
 </template>
 
@@ -32,6 +37,7 @@ import Scroll from 'components/common/scroll/Scroll'
 import BackTop from 'components/content/backTop/BackTop'
 
 import {getHomeMultidata,getHomeGoods} from "network/home"
+import {debounce} from "common/utils";
 
 
   export default {
@@ -56,8 +62,10 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
           'new': {page: 0,list:[]},
           'sell': {page: 0,list:[]}
         },
-        currentType:'pop' ,
-        isShowBackTop:false
+        currentType:'pop',
+        isShowBackTop:false,
+        tabOffsetTop :0,
+        isTabFixed: false
       }
     },
 
@@ -74,11 +82,42 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+      //3.监听图片加载
+    
+      /* this.$bus.$on('itemImageLoad', () => {
+        this.$refs.scroll.refresh()
+      }) */
     },
+
+      mounted() {
+          //图片加载完成的事件监听
+        const refresh = debounce(this.$refs.scroll.refresh,500)
+        
+         this.$bus.$on('itemImageLoad', () => {
+        // this.$refs.scroll.refresh(); 
+          refresh()
+        })
+
+        //2获取tabControl的offsetTop
+        //所有组件都有一个属性$el：用于获取组件中的元素
+    },
+
     methods: {
+      //防抖
+     /*  debounce(func, delay) {
+        let timer = null
+        return function(...args) {
+           if(timer) clearTimeout(timer)
+          timer = setTimeout(() => {
+            func.apply(this,args)
+          },delay)
+        }
+      }, */
+
       // 事件监听
       tabClick(index) {
-        switch (index) {
+        switch (index){
           case 0:
            this.currentType = 'pop'
            break
@@ -88,7 +127,10 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
           case 2:
             this.currentType = 'sell'
             break
-        }
+        
+      }
+      this.$refs.tabControl1.currentIndex = index
+      this.$refs.tabControl2.currentIndex = index
       },
 
       backClick(){
@@ -96,12 +138,21 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
       },
 
       contentScroll(position){
+        //判断backtop是否显示
         this.isShowBackTop = (-position.y) > 1000
+
+        //决定tabcontrol是否吸顶(position: fixed)
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
 
+      //监听下拉更多
       loadMore(){
         // this.getHomeGoods(this.currentType)
         this.getHomeGoods(this.currentType)
+      },
+
+      swiperImageLoad() {
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
       },
 
       // 网络请求相关
@@ -118,7 +169,8 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
           this.goods[type].list.push(...res.data.list),
           this.goods[type].page += 1
 
-          this.$refs.scroll.finishPullUp
+          // 完成下拉加载更多
+          this.$refs.scroll.finishPullUp()
         })
       }
     }
@@ -127,7 +179,7 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
 
 <style scoped>
     #home {
-      padding-top: 44px;
+      /* padding-top: 44px; */
       height:100vh;
       position: relative;
     }
@@ -135,17 +187,16 @@ import {getHomeMultidata,getHomeGoods} from "network/home"
     .home-nav {
       background-color: var(--color-tint);
       color:white;
-      position: fixed;
+     /*  position: fixed;
       left: 0px;
       right: 0px;
       top: 0px;
-      z-index: 9;
+      z-index: 9; */
     }
 
     .tab-control {
-      position: sticky;
-      top:44px;
-      z-index:10
+      position: relative;
+      z-index: 9;
     }
 
     .content {
