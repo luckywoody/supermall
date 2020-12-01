@@ -4,20 +4,19 @@
       <div class= "info-price">
         <span class= "n-price"> {{goods.newPrice}} </span>
         <span class= "o-price"> {{goods.oldPrice}} </span>
-        <span v-if ="goods.discount" class= "discount"> {{goods.discount}} </span>
+        <span v-if ="goods.discount" class="discount"> {{goods.discount}} </span>
       </div>
 
-        <div class ="info-other">
-          <span> {{goods.columns[0]}} </span>
+        <div class="info-other">
+          <span> {{goods.columns[0]}} </span> 
           <span> {{goods.columns[1]}} </span>
           <span> {{goods.services[goods.services.length-1].name}} </span>
         </div>
-
-        <div class= "info-service">
+        <div class="info-service">
           <span class="info-service-item" 
-          v-for ="index in goods.services.length-1" :key= "index" >
+          v-for ="index in goods.services.length-1" :key="index"  >
           <img :src="goods.services[index-1].icon" alt="">
-          <span> {{goods.services[index-1].name}} </span>
+          <span>{{goods.services[index-1].name}}</span>
           </span>
         </div>
     </div>
@@ -38,7 +37,7 @@ export default {
 }
 </script>
 
-<style scope>
+<style scoped>
   .base-info {
     margin-top: 15px;
     padding: 0 8px;
@@ -48,6 +47,10 @@ export default {
 
   .info-title {
     color: #222
+  }
+
+  .info-price {
+    margin-top :10px;
   }
 
   .info-price .n-price {
@@ -80,7 +83,7 @@ export default {
     display: flex;
     font-size:13px;
     border-bottom: 1px solid rgba(100,100,100,.1);
-    justify-content: space-between
+    justify-content: space-between;
   }
 
   .info-service {

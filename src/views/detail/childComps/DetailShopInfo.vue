@@ -1,17 +1,16 @@
 <template>
-    <div class= "shop-info">
-      <div class= "shop-top">
+    <div class="shop-info">
+      <div class="shop-top">
         <img :src="shop.logo" alt="">
         <span class="title"> {{shop.name}} </span>
       </div>
-
       <div class= "shop-middle">
         <div class="shop-middle-item shop-middle-left">
           <div class="info-sells">
             <div class="sells-count">
               {{shop.sells  | sellCountFilter}} 
             </div>
-            <div class= "sells-text">总销量</div>
+            <div class="sells-text">总销量</div>
           </div>
           <div class= "info-goods">
             <div class="goods-count">
@@ -24,9 +23,9 @@
           <table>
             <tr v-for = "(item,index) in shop.score" :key="index">
               <td> {{item.name}} </td>
-              <td class= "score" :class= " {'score-better' : item.isBetter} ">{{item.score}} </td>
-              <td class= "better" :class= " {'better-more' : item.isBetter} "> 
-                <span> {{item.isBetter ? '高':'低'}} </span>
+              <td class= "score" :class= " {'score-better' : item.isBetter}">{{item.score}}</td>
+              <td class= "better" :class= " {'better-more' : item.isBetter}"> 
+                <span>{{item.isBetter ? '高':'低'}}</span>
               </td>
             </tr>
           </table>
@@ -43,7 +42,7 @@ export default {
   name: 'DetailShopInfo',
   props: {
     shop:{
-      type:Object,
+      type:Object, 
       default() {
         return {}
       }
@@ -86,7 +85,7 @@ export default {
   .shop-middle {
     margin-top:15px;
     display: flex;
-    align-content: center;
+    align-items: center;
   }
 
   .shop-middle-item {
@@ -145,8 +144,18 @@ export default {
   }
 
   .shop-bottom {
-    position: relative;
     text-align: center;
-    top:12px;
+    margin-top:12px;
+  }
+
+  .enter-shop {
+    display: inline-block;
+    font-size: 14px;
+    background-color: #f2f5f8;
+    width: 150px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 10px; 
   }
 </style>
